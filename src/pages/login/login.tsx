@@ -71,9 +71,7 @@ const LoginPage = () => {
                         // password: "abcd@1234"
                     }}
                         onFinish={(value) => {
-                            mutate({ email: value.email, password: value.password })
-                            console.log(value);
-
+                            mutate({ email: value.email, password: value.password });
                         }}>
                         {isError && <Alert style={{ marginBottom: 24 }} type="error" message={error?.message} />}
                         <Form.Item name="email" rules={[
