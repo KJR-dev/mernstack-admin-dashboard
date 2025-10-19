@@ -19,7 +19,7 @@ const getSelf = async () => {
 
 const LoginPage = () => {
     const {setUser} = useAuthStore();
-    const { data: selfData, refetch } = useQuery({
+    const { refetch } = useQuery({
         queryKey: ["self"],
         queryFn: getSelf,
         enabled: false,
