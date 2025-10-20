@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { self } from "../http/api";
 import { useAuthStore } from "../store";
 import { useEffect } from "react";
+import { AxiosError } from "axios";
 
 const getSelf = async () => {
     const { data } = await self();
@@ -15,6 +16,12 @@ const Root = () => {
         queryKey: ["self"],
         queryFn: getSelf,
         // enabled: false,      //Automatic call system.
+        retry: (failureCount: number, error) => {
+            if (error instanceof AxiosError && error.response?.status === 401) {
+                return false;
+            }
+            return failureCount < 3 ;
+        }
     });
     useEffect(() => {
         if (data) {
