@@ -10,7 +10,7 @@ interface Tenant{
 export interface User {
     id: number,
     firstName: string;
-    laseName: string;
+    lastName: string;
     email: string;
     role: string;
     tenant?:Tenant
