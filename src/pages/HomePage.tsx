@@ -81,7 +81,7 @@ const HomePage = () => {
               </Card>
             </Col>
             <Col span={12}>
-              <Card bordered={false}>
+              <Card>
                 <Statistic
                   title="Total sale"
                   value={70000}
@@ -91,16 +91,12 @@ const HomePage = () => {
               </Card>
             </Col>
             <Col span={24}>
-              <Card
-                title={<CardTitle title="Sales" PrefixIcon={BarChartIcon} />}
-                bordered={false}></Card>
+              <Card title={<CardTitle title="Sales" PrefixIcon={BarChartIcon} />}></Card>
             </Col>
           </Row>
         </Col>
         <Col span={12}>
-          <Card
-            bordered={false}
-            title={<CardTitle title="Recent orders" PrefixIcon={BasketIcon} />}>
+          <Card title={<CardTitle title="Recent orders" PrefixIcon={BasketIcon} />}>
             <List
               className="demo-loadmore-list"
               loading={false}
