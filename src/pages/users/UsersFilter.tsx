@@ -1,17 +1,17 @@
-import { Button, Card, Col, Input, Row, Select } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Card, Col, Input, Row, Select } from "antd";
 
 type userFilterProps = {
-    onFilterChange: (filterName:string,filterValue:string) => void;
+    children?: React.ReactNode;
+    onFilterChange: (filterName: string, filterValue: string) => void;
 }
-const UsersFilter = ({onFilterChange}:userFilterProps) => {
+const UsersFilter = ({ onFilterChange, children }: userFilterProps) => {
     return (
         <Card style={{ width: "100%" }}>
             <Row justify={"space-between"}>
                 <Col span={16}>
                     <Row gutter={20}>
                         <Col span={8}>
-                            <Input.Search placeholder="Search" allowClear={true} onChange={(e) => onFilterChange('searchFilter',e.target.value)}/>
+                            <Input.Search placeholder="Search" allowClear={true} onChange={(e) => onFilterChange('searchFilter', e.target.value)} />
                         </Col>
                         <Col span={8}>
                             <Select style={{ width: '100%' }}
@@ -35,7 +35,7 @@ const UsersFilter = ({onFilterChange}:userFilterProps) => {
                     </Row>
                 </Col>
                 <Col span={8} style={{ display: 'flex', justifyContent: 'end' }}>
-                    <Button type="primary" icon={<PlusOutlined />}>Create User</Button>
+                    {children}
                 </Col>
             </Row>
         </Card>
