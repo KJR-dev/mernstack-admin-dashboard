@@ -19,7 +19,7 @@ const UserForm = () => {
               <Form.Item label="First name" name="firstName" rules={[
                 {
                   required: true,
-                  message:"First name is required"
+                  message: "First name is required"
                 }
               ]}>
                 <Input size='large' />
@@ -43,7 +43,7 @@ const UserForm = () => {
                 },
                 {
                   type: "email",
-                  message:"Email is not valid"
+                  message: "Email is not valid"
                 }
               ]}>
                 <Input size='large' />
@@ -59,7 +59,7 @@ const UserForm = () => {
                 {
                   required: true,
                   message: "Password is required"
-                  
+
                 }
               ]}>
                 <Input type='password' size='large' />
@@ -74,7 +74,7 @@ const UserForm = () => {
               <Form.Item label="Role" name="role" rules={[
                 {
                   required: true,
-                  message:"Role is required"
+                  message: "Role is required"
                 }
               ]}>
                 <Select style={{ width: '100%' }}
@@ -90,10 +90,10 @@ const UserForm = () => {
             </Col>
 
             <Col span={12}>
-              <Form.Item label="Tenant" name="tenant" rules={[
+              <Form.Item label="Tenant" name="tenantId" rules={[
                 {
                   required: true,
-                  message:"Tenant is required"
+                  message: "Tenant is required"
                 }
               ]}>
                 <Select style={{ width: '100%' }}
@@ -101,11 +101,11 @@ const UserForm = () => {
                   allowClear={true}
                   onChange={() => { }}
                   placeholder="Select Tenant">
-                  {tenants?.map((tenant: Tenant) => 
-                    (<Select.Option key={tenant.id} value={tenant.id}>
-                      {`${tenant.name}, ${tenant.address}`}
-                    </Select.Option>
-                    ))}
+                  {tenants?.map((tenant: Tenant) =>
+                  (<Select.Option key={tenant.id} value={tenant.id}>
+                    {`${tenant.name}, ${tenant.address}`}
+                  </Select.Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
