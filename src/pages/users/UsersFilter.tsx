@@ -35,7 +35,7 @@ const UsersFilter = ({ onFilterChange, children }: userFilterProps) => {
                     </Row>
                 </Col>
                 <Col span={8} style={{ display: 'flex', justifyContent: 'end' }}>
-                    {children}
+                    {(children)}
                 </Col>
             </Row>
         </Card>
