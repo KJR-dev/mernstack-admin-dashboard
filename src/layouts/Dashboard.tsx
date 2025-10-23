@@ -22,9 +22,9 @@ const getMenuItems = (role: string) => {
             label: <NavLink to='/'>Home</NavLink>
         },
         {
-            key: '/restaurants',
+            key: '/tenants',
             icon: <Icon component={foodIcon} />,
-            label: <NavLink to='/restaurants'>Restaurants</NavLink>
+            label: <NavLink to='/tenants'>Tenants</NavLink>
         },
         {
             key: '/products',
@@ -44,7 +44,7 @@ const getMenuItems = (role: string) => {
             icon: <Icon component={UserIcon} />,
             label: <NavLink to='/users'>Users</NavLink>
         });
-        return menus; 
+        return menus;
     }
     return baseItems;
 }
