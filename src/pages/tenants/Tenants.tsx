@@ -25,7 +25,7 @@ const columns = [
 ]
 
 const Tenants = () => {
-      const [drawerOpen, setDrawerOpen] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const { data: tenants, isLoading, isError, error } = useQuery({
         queryKey: ["tenants"],
         queryFn: () => {
@@ -34,7 +34,7 @@ const Tenants = () => {
     });
     return (
         <div>
-            <Space direction="vertical" size={"large"} style={{width:'100%'}}>
+            <Space direction="vertical" size={"large"} style={{ width: '100%' }}>
                 <Breadcrumb
                     separator={<RightOutlined />}
                     items={[
@@ -53,7 +53,7 @@ const Tenants = () => {
                 <TenantsFilter onFilterChange={(filterName: string, filterValue: string) => {
                     console.log(filterName, filterValue);
                 }}>
-                    <Button type="primary" icon={<PlusOutlined />} onClick={()=>setDrawerOpen(true)}>Add Tenant</Button>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setDrawerOpen(true)}>Add Tenant</Button>
                 </TenantsFilter>
                 <Table columns={columns} dataSource={tenants} rowKey={'id'} />
                 <Drawer
