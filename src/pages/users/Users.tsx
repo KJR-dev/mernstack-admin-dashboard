@@ -1,13 +1,14 @@
 import { Breadcrumb, Button, Drawer, Form, Space, Table, theme } from "antd";
 import { PlusOutlined, RightOutlined } from '@ant-design/icons';
 import { Link, Navigate } from "react-router-dom";
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, getUsers } from "../../http/api";
 import type { CreateUserData, User } from "../../types";
 import { useAuthStore } from "../../store";
 import UsersFilter from "./UsersFilter";
 import { useState } from "react";
 import UserForm from "./forms/UserForm";
+import { PER_PAGE } from "../../constants";
 
 const columns = [
   {
@@ -47,13 +48,20 @@ const Users = () => {
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
   const { token: { colorBgLayout } } = theme.useToken();
+  const [queryParams, setQueryParams] = useState({
+    currentPage: 1,
+    perPage: PER_PAGE,
+
+  })
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { data: users, isLoading, isError, error } = useQuery({
-    queryKey: ["users"],
+    queryKey: ["users", queryParams],
     queryFn: () => {
-      return getUsers().then((res) => res.data);
+      const queryString = new URLSearchParams(queryParams as unknown as Record<string, string>).toString();
+      console.log('queryString', queryString);
+      return getUsers(queryString).then((res) => res.data);
     }
-  })
+  });
   const { user } = useAuthStore();
 
   const { mutate: userMutate } = useMutation({
@@ -98,7 +106,24 @@ const Users = () => {
         }}>
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setDrawerOpen(true)}>Add User</Button>
         </UsersFilter>
-        <Table columns={columns} dataSource={users} rowKey={'id'} />
+        <Table
+          columns={columns}
+          dataSource={users?.data}
+          rowKey={'id'}
+          pagination={{
+            total: users?.total,
+            pageSize: queryParams.perPage,
+            current: queryParams.currentPage,
+            onChange: (page) => {
+              setQueryParams((prev) => {
+                return {
+                  ...prev,
+                  currentPage: page
+                }
+              })
+            }
+          }}
+        />
         <Drawer
           title='Add User'
           width={720}
