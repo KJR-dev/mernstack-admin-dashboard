@@ -38,10 +38,18 @@ const columns = [
     key: 'role',
   },
   {
-    title: 'Restaurant',
+    title: 'Tenant',
     dataIndex: ['tenant', 'name'],
     key: 'tenantName',
-    render: (text: string) => text || 'Not set',
+    render: (_text: string, record: User) => {
+      return record.tenant ? (
+        <div>
+          {record.tenant.name}, {record.tenant.address}
+        </div>
+      ) : (
+        <div></div>
+      );
+    }
   },
 ]
 
