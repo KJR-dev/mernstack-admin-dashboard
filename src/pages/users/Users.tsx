@@ -6,9 +6,10 @@ import { createUser, getUsers } from "../../http/api";
 import type { CreateUserData, FieldData, User } from "../../types";
 import { useAuthStore } from "../../store";
 import UsersFilter from "./UsersFilter";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import UserForm from "./forms/UserForm";
 import { PER_PAGE } from "../../constants";
+import { debounce } from "lodash";
 
 const columns = [
   {
@@ -83,13 +84,22 @@ const Users = () => {
     form.resetFields();
     setDrawerOpen(false);
   }
+  const debouncedQUpdate = useMemo(() => {
+    return debounce((value: string | undefined) => {
+      setQueryParams((prev) => ({ ...prev, q: value }))
+    }, 1000);
+  }, []);
 
   const onFilterChange = (changedFields: FieldData[]) => {
     console.log(changedFields);
     const changedFilterFilelds = changedFields
       .map((item) => ({ [item.name[0]]: item.value }))
       .reduce((acc, item) => ({ ...acc, ...item }), {});
-    setQueryParams((prev) => ({ ...prev, ...changedFilterFilelds }))
+    if ('q' in changedFilterFilelds) {
+      debouncedQUpdate(changedFilterFilelds.q)
+    } else {
+      setQueryParams((prev) => ({ ...prev, ...changedFilterFilelds }));
+    }
   }
 
   if (user?.role !== 'admin') {
