@@ -11,7 +11,7 @@ export type User = {
     createdAt: string;
 }
 
-export type CreateUserData={
+export type CreateUserData = {
     email: string;
     firstName: string;
     lastName: string;
@@ -25,4 +25,9 @@ export type Tenant = {
     name: string,
     address: string,
 
+}
+
+export type FieldData = {
+    name: string[];
+    value?: string
 }
