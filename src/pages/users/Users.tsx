@@ -94,19 +94,19 @@ const Users = () => {
   }
   const debouncedQUpdate = useMemo(() => {
     return debounce((value: string | undefined) => {
-      setQueryParams((prev) => ({ ...prev, q: value }))
-    }, 1000);
+      setQueryParams((prev) => ({ ...prev, q: value, currentPage: 1 }))
+    }, 500);
   }, []);
 
   const onFilterChange = (changedFields: FieldData[]) => {
     console.log(changedFields);
-    const changedFilterFilelds = changedFields
+    const changedFilterFields = changedFields
       .map((item) => ({ [item.name[0]]: item.value }))
       .reduce((acc, item) => ({ ...acc, ...item }), {});
-    if ('q' in changedFilterFilelds) {
-      debouncedQUpdate(changedFilterFilelds.q)
+    if ('q' in changedFilterFields) {
+      debouncedQUpdate(changedFilterFields.q)
     } else {
-      setQueryParams((prev) => ({ ...prev, ...changedFilterFilelds }));
+      setQueryParams((prev) => ({ ...prev, ...changedFilterFields, currentPage: 1 }));
     }
   }
 
