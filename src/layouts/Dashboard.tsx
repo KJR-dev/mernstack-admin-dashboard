@@ -22,11 +22,6 @@ const getMenuItems = (role: string) => {
             label: <NavLink to='/'>Home</NavLink>
         },
         {
-            key: '/tenants',
-            icon: <Icon component={foodIcon} />,
-            label: <NavLink to='/tenants'>Tenants</NavLink>
-        },
-        {
             key: '/products',
             icon: <Icon component={BasketIcon} />,
             label: <NavLink to='/products'>Products</NavLink>
@@ -39,11 +34,18 @@ const getMenuItems = (role: string) => {
     ];
     if (role === "admin") {
         const menus = [...baseItems];
-        menus.splice(1, 0, {
-            key: '/users',
-            icon: <Icon component={UserIcon} />,
-            label: <NavLink to='/users'>Users</NavLink>
-        });
+        menus.splice(1, 0,
+            {
+                key: '/tenants',
+                icon: <Icon component={foodIcon} />,
+                label: <NavLink to='/tenants'>Tenants</NavLink>
+            },
+            {
+                key: '/users',
+                icon: <Icon component={UserIcon} />,
+                label: <NavLink to='/users'>Users</NavLink>
+            },
+        );
         return menus;
     }
     return baseItems;
