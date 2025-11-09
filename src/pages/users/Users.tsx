@@ -2,7 +2,7 @@ import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, theme, Typo
 import { LoadingOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons';
 import { Link, Navigate } from "react-router-dom";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createUser, getUsers, updateUser } from "../../http/api";
+import { createUser, deleteUser, getUsers, updateUser } from "../../http/api";
 import type { CreateUserData, FieldData, User } from "../../types";
 import { useAuthStore } from "../../store";
 import UsersFilter from "./UsersFilter";
@@ -102,6 +102,15 @@ const Users = () => {
     }
   });
 
+  const { mutate: deleteUserMutate } = useMutation({
+    mutationKey: ['delete-user'],
+    mutationFn: async (id: number) => deleteUser(id).then((res) => res.data),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      return;
+    }
+  });
+
   const onHandleSubmit = async () => {
     await form.validateFields();
     const isEditMode = !!currentEditingUser;
@@ -171,6 +180,9 @@ const Users = () => {
                     <Button type="link" onClick={() => {
                       setCurrentEditingUser(record)
                     }}>Edit</Button>
+                    <Button type="link" onClick={() => {
+                      deleteUserMutate(record.id);
+                    }}>Delete</Button>
                   </Space>
                 )
               }
