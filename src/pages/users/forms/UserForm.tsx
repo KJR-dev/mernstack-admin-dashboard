@@ -3,7 +3,7 @@ import { getTenants } from "../../../http/api";
 import { useQuery } from "@tanstack/react-query";
 import type { Tenant } from "../../../types";
 
-const UserForm = () => {
+const UserForm = ({ isEditMode = false }: { isEditMode: boolean }) => {
   const { data: tenants } = useQuery({
     queryKey: ["tenants"],
     queryFn: () => {
@@ -52,21 +52,25 @@ const UserForm = () => {
           </Row>
         </Card>
 
-        <Card title="Security info">
-          <Row gutter={20}>
-            <Col span={12}>
-              <Form.Item label="Password" name="password" rules={[
-                {
-                  required: true,
-                  message: "Password is required"
+        {!isEditMode && (
+          <Card title="Security info">
+            <Row gutter={20}>
+              <Col span={12}>
+                <Form.Item label="Password" name="password" rules={[
+                  {
+                    required: true,
+                    message: "Password is required"
 
-                }
-              ]}>
-                <Input type='password' size='large' />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Card>
+                  }
+                ]}>
+                  <Input type='password' size='large' />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Card>
+        )
+        }
+
 
         <Card title="Auth info">
           <Row gutter={20}>
@@ -97,6 +101,7 @@ const UserForm = () => {
                 }
               ]}>
                 <Select style={{ width: '100%' }}
+                  id="selectBoxInUserForm"
                   size="large"
                   allowClear={true}
                   onChange={() => { }}

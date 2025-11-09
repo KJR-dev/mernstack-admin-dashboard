@@ -9,6 +9,7 @@ export const logout = () => api.post('/api/v1/web/auth/logout');
 // User Service
 export const getUsers = (queryString: string) => api.get(`api/v1/web/user?${queryString}`);
 export const createUser = (user: CreateUserData) => api.post('api/v1/web/user', user);
+export const updateUser = (user: CreateUserData, id: number) => api.patch(`api/v1/web/user/${id}`, user);
 
 // Tenant Service
 export const getTenants = () => api.get('api/v1/web/tenants');
