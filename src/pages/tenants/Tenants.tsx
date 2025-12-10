@@ -1,10 +1,11 @@
-import { Breadcrumb, Button, Drawer, Space, Table } from "antd"
+import { Breadcrumb, Button, Drawer, Form, Space, Table, theme } from "antd"
 import { PlusOutlined, RightOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getTenants } from "../../http/api";
 import TenantsFilter from "./TenantsFilter";
 import { useState } from "react";
+import { TenantForm } from "./forms/TenantForm";
 
 const columns = [
     {
@@ -25,6 +26,9 @@ const columns = [
 ]
 
 const Tenants = () => {
+    const {
+        token: { colorBgLayout },
+    } = theme.useToken();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const { data: tenants, isLoading, isError, error } = useQuery({
         queryKey: ["tenants"],
@@ -59,6 +63,7 @@ const Tenants = () => {
                 <Drawer
                     title="Add Tenant"
                     width={720}
+                    styles={{ body: { background: colorBgLayout } }}
                     closable={{ 'aria-label': 'Close Button' }}
                     open={drawerOpen}
                     destroyOnHidden={true}
@@ -72,9 +77,9 @@ const Tenants = () => {
                         </Space>
                     }
                 >
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
+                    <Form layout="vertical">
+                        <TenantForm />
+                    </Form>
                 </Drawer>
             </Space>
         </div>
