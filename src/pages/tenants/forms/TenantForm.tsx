@@ -5,14 +5,24 @@ export const TenantForm = () => {
         <Col span={24}>
             <Card title="Basic info">
                 <Row gutter={20}>
-                    <Col span={12}>
-                        <Form.Item label="Name" name="name">
-                            <Input />
+                    <Col span={18}>
+                        <Form.Item label="Name" name="name" rules={[
+                            {
+                                required: true,
+                                message: "Name is required"
+                            }
+                        ]}>
+                            <Input size="large" />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
-                        <Form.Item label="Address" name="address">
-                            <Input />
+                    <Col span={18}>
+                        <Form.Item label="Address" name="address" rules={[
+                            {
+                                required: true,
+                                message: "Address is required"
+                            }
+                        ]}>
+                            <Input size="large" />
                         </Form.Item>
                     </Col>
                 </Row>
