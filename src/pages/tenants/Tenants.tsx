@@ -6,7 +6,7 @@ import { createTenant, getTenants } from "../../http/api";
 import TenantsFilter from "./TenantsFilter";
 import { useState } from "react";
 import { TenantForm } from "./forms/TenantForm";
-import type { CreateTenant } from "../../types";
+import type { CreateTenant, FieldData } from "../../types";
 import { PER_PAGE } from "../../constants";
 
 const columns = [
@@ -29,6 +29,7 @@ const columns = [
 
 const Tenants = () => {
     const [form] = Form.useForm();
+    const [filterForm] = Form.useForm();
     const queryClient = useQueryClient();
     const {
         token: { colorBgLayout },
@@ -43,7 +44,8 @@ const Tenants = () => {
     const { data: tenants, isFetching, isError, error } = useQuery({
         queryKey: ["tenants", queryParams],
         queryFn: () => {
-            const queryString = new URLSearchParams(queryParams as unknown as Record<string, string>).toString();
+            const filterParams = Object.fromEntries(Object.entries(queryParams).filter(item => !!item[1]))
+            const queryString = new URLSearchParams(filterParams as unknown as Record<string, string>).toString();
             return getTenants(queryString).then((res) => res.data);
         },
         placeholderData: keepPreviousData,
@@ -62,6 +64,17 @@ const Tenants = () => {
         await tenantMutate(form.getFieldsValue())
         form.resetFields();
         setDrawerOpen(false);
+    }
+    const onFilterChange = async (changedFields:FieldData[]) => {
+        const changedFilterFields = changedFields.map((item) => ({
+            [item.name[0]]: item.value
+        })).reduce((acc, item) => ({
+            ...acc, ...item
+        }), {});
+        setQueryParams((prev) => ({
+            ...prev,
+            ...changedFilterFields
+        }))
     }
     return (
         <div>
@@ -83,11 +96,11 @@ const Tenants = () => {
                     {isFetching && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
                     {isError && <Typography.Text type="danger">{error.message}</Typography.Text>}
                 </Flex>
-                <TenantsFilter onFilterChange={(filterName: string, filterValue: string) => {
-                    console.log(filterName, filterValue);
-                }}>
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setDrawerOpen(true)}>Add Tenant</Button>
-                </TenantsFilter>
+                <Form form={filterForm} onFieldsChange={onFilterChange}>
+                    <TenantsFilter>
+                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setDrawerOpen(true)}>Add Tenant</Button>
+                    </TenantsFilter>
+                </Form>
                 <Table
                     columns={columns}
                     dataSource={tenants?.data}
