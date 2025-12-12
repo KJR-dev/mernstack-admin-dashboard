@@ -13,5 +13,5 @@ export const updateUser = (user: CreateUserData, id: number) => api.patch(`api/v
 export const deleteUser = (id: number) => api.delete(`api/v1/web/user/${id}`);
 
 // Tenant Service
-export const getTenants = () => api.get('api/v1/web/tenants');
+export const getTenants = (queryString: string) => api.get(`api/v1/web/tenants/?${queryString}`);
 export const createTenant = (tenant: CreateTenant) => api.post('api/v1/web/tenants',tenant);

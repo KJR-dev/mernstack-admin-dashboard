@@ -1,12 +1,13 @@
-import { Breadcrumb, Button, Drawer, Form, Space, Table, theme } from "antd"
-import { PlusOutlined, RightOutlined } from '@ant-design/icons';
+import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, theme, Typography } from "antd"
+import { LoadingOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createTenant, getTenants } from "../../http/api";
 import TenantsFilter from "./TenantsFilter";
 import { useState } from "react";
 import { TenantForm } from "./forms/TenantForm";
 import type { CreateTenant } from "../../types";
+import { PER_PAGE } from "../../constants";
 
 const columns = [
     {
@@ -32,19 +33,27 @@ const Tenants = () => {
     const {
         token: { colorBgLayout },
     } = theme.useToken();
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const { data: tenants, isLoading, isError, error } = useQuery({
-        queryKey: ["tenants"],
-        queryFn: () => {
-            return getTenants().then((res) => res.data);
+    const [queryParams, setQueryParams] = useState(
+        {
+            currentPage: 1,
+            perPage: PER_PAGE,
         }
+    );
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const { data: tenants, isFetching, isError, error } = useQuery({
+        queryKey: ["tenants", queryParams],
+        queryFn: () => {
+            const queryString = new URLSearchParams(queryParams as unknown as Record<string, string>).toString();
+            return getTenants(queryString).then((res) => res.data);
+        },
+        placeholderData: keepPreviousData,
     });
 
     const { mutate: tenantMutate } = useMutation({
         mutationKey: ['tenant'],
         mutationFn: async (data: CreateTenant) => createTenant(data).then((res) => res.data),
         onSuccess: async () => {
-            queryClient.invalidateQueries({ queryKey: (['tenants'])})
+            queryClient.invalidateQueries({ queryKey: (['tenants']) })
             return;
         }
     })
@@ -57,27 +66,46 @@ const Tenants = () => {
     return (
         <div>
             <Space direction="vertical" size={"large"} style={{ width: '100%' }}>
-                <Breadcrumb
-                    separator={<RightOutlined />}
-                    items={[
-                        {
-                            title: <Link to='/'>Dashboard</Link>,
-                            // href: '/',
-                        },
-                        {
-                            title: 'Tenants',
-                            href: '#',
-                        },
-                    ]}
-                />
-                {isLoading && <div>Loading...</div>}
-                {isError && <div>{error.message}</div>}
+                <Flex justify="space-between">
+                    <Breadcrumb
+                        separator={<RightOutlined />}
+                        items={[
+                            {
+                                title: <Link to='/'>Dashboard</Link>,
+                                // href: '/',
+                            },
+                            {
+                                title: 'Tenants',
+                                href: '#',
+                            },
+                        ]}
+                    />
+                    {isFetching && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
+                    {isError && <Typography.Text type="danger">{error.message}</Typography.Text>}
+                </Flex>
                 <TenantsFilter onFilterChange={(filterName: string, filterValue: string) => {
                     console.log(filterName, filterValue);
                 }}>
                     <Button type="primary" icon={<PlusOutlined />} onClick={() => setDrawerOpen(true)}>Add Tenant</Button>
                 </TenantsFilter>
-                <Table columns={columns} dataSource={tenants} rowKey={'id'} />
+                <Table
+                    columns={columns}
+                    dataSource={tenants?.data}
+                    rowKey={'id'}
+                    pagination={{
+                        total: tenants?.total,
+                        current: queryParams.currentPage,
+                        pageSize: PER_PAGE,
+                        onChange: (page) => {
+                            setQueryParams((prev) => {
+                                return {
+                                    ...prev,
+                                    currentPage: page,
+                                }
+                            })
+                        }
+                    }}
+                />
                 <Drawer
                     title="Add Tenant"
                     width={720}
