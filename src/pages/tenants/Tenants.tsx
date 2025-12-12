@@ -4,10 +4,11 @@ import { Link } from "react-router-dom";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createTenant, getTenants } from "../../http/api";
 import TenantsFilter from "./TenantsFilter";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { TenantForm } from "./forms/TenantForm";
 import type { CreateTenant, FieldData } from "../../types";
 import { PER_PAGE } from "../../constants";
+import { debounce } from "lodash";
 
 const columns = [
     {
@@ -65,16 +66,26 @@ const Tenants = () => {
         form.resetFields();
         setDrawerOpen(false);
     }
-    const onFilterChange = async (changedFields:FieldData[]) => {
+  const debouncedQUpdate = useMemo(() => {
+    return debounce((value: string | undefined) => {
+      setQueryParams((prev) => ({ ...prev, q: value, currentPage: 1 }))
+    }, 500);
+  }, []);
+    const onFilterChange = async (changedFields: FieldData[]) => {
         const changedFilterFields = changedFields.map((item) => ({
             [item.name[0]]: item.value
         })).reduce((acc, item) => ({
             ...acc, ...item
         }), {});
-        setQueryParams((prev) => ({
-            ...prev,
-            ...changedFilterFields
-        }))
+        if ('q' in changedFilterFields) {
+            debouncedQUpdate(changedFilterFields.q);
+        } else {
+            setQueryParams((prev) => ({
+                ...prev,
+                ...changedFilterFields
+            }));
+        }
+
     }
     return (
         <div>
