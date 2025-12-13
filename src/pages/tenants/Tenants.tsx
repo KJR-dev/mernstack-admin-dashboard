@@ -25,6 +25,9 @@ const columns = [
         title: 'Address',
         dataIndex: 'address',
         key: 'address',
+    },
+    {
+        title: 'Action',
     }
 ]
 
@@ -82,7 +85,8 @@ const Tenants = () => {
         } else {
             setQueryParams((prev) => ({
                 ...prev,
-                ...changedFilterFields
+                ...changedFilterFields,
+                currentPage:1
             }));
         }
 
