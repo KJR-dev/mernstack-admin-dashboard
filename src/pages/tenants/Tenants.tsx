@@ -2,7 +2,7 @@ import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, theme, Typo
 import { LoadingOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createTenant, getTenants, updateTenant } from "../../http/api";
+import { createTenant, deleteTenant, getTenants, updateTenant } from "../../http/api";
 import TenantsFilter from "./TenantsFilter";
 import { useEffect, useMemo, useState } from "react";
 import { TenantForm } from "./forms/TenantForm";
@@ -78,6 +78,15 @@ const Tenants = () => {
         }
     })
 
+      const { mutate: deleteUserMutate } = useMutation({
+        mutationKey: ['delete-tenant'],
+        mutationFn: async (id: string) => deleteTenant(id).then((res) => res.data),
+        onSuccess: async () => {
+            queryClient.invalidateQueries({ queryKey: ['tenants'] });
+          return;
+        }
+      });
+
     const onHandleSubmit = async () => {
         const isEditMode = !!currentEditingTenant;
         await form.validateFields();
@@ -148,7 +157,9 @@ const Tenants = () => {
                                         <Button type="link" onClick={() => {
                                             setCurrentEditingTenant(record);
                                         }}>Edit</Button>
-                                        <Button type="link">Delete</Button>
+                                        <Button type="link" onClick={() => {
+                                            deleteUserMutate(record.id);
+                                        }}>Delete</Button>
                                     </Space>
                                 )
                             }
