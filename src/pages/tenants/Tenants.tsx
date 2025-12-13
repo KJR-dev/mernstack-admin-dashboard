@@ -2,11 +2,11 @@ import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, theme, Typo
 import { LoadingOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createTenant, getTenants } from "../../http/api";
+import { createTenant, getTenants, updateTenant } from "../../http/api";
 import TenantsFilter from "./TenantsFilter";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TenantForm } from "./forms/TenantForm";
-import type { CreateTenant, FieldData } from "../../types";
+import type { CreateTenant, FieldData, Tenant } from "../../types";
 import { PER_PAGE } from "../../constants";
 import { debounce } from "lodash";
 
@@ -25,15 +25,13 @@ const columns = [
         title: 'Address',
         dataIndex: 'address',
         key: 'address',
-    },
-    {
-        title: 'Action',
     }
 ]
 
 const Tenants = () => {
     const [form] = Form.useForm();
     const [filterForm] = Form.useForm();
+    const [currentEditingTenant, setCurrentEditingTenant] = useState<Tenant | null>(null)
     const queryClient = useQueryClient();
     const {
         token: { colorBgLayout },
@@ -45,6 +43,13 @@ const Tenants = () => {
         }
     );
     const [drawerOpen, setDrawerOpen] = useState(false);
+    useEffect(() => {
+        if (currentEditingTenant) {
+            setDrawerOpen(true);
+            form.setFieldsValue(currentEditingTenant);
+        }
+    }, [currentEditingTenant, form]);
+
     const { data: tenants, isFetching, isError, error } = useQuery({
         queryKey: ["tenants", queryParams],
         queryFn: () => {
@@ -63,17 +68,33 @@ const Tenants = () => {
             return;
         }
     })
+
+    const { mutate: updateTenantMutate } = useMutation({
+        mutationKey: ['update-tenant'],
+        mutationFn: async (data: CreateTenant) => updateTenant(data, currentEditingTenant!.id).then((res) => res.data),
+        onSuccess: async () => {
+            queryClient.invalidateQueries({ queryKey: (['tenants']) })
+            return;
+        }
+    })
+
     const onHandleSubmit = async () => {
+        const isEditMode = !!currentEditingTenant;
         await form.validateFields();
-        await tenantMutate(form.getFieldsValue())
+        if (isEditMode) {
+            await updateTenantMutate(form.getFieldsValue())
+        } else {
+            await tenantMutate(form.getFieldsValue())
+        }
         form.resetFields();
+        setCurrentEditingTenant(null);
         setDrawerOpen(false);
     }
-  const debouncedQUpdate = useMemo(() => {
-    return debounce((value: string | undefined) => {
-      setQueryParams((prev) => ({ ...prev, q: value, currentPage: 1 }))
-    }, 500);
-  }, []);
+    const debouncedQUpdate = useMemo(() => {
+        return debounce((value: string | undefined) => {
+            setQueryParams((prev) => ({ ...prev, q: value, currentPage: 1 }))
+        }, 500);
+    }, []);
     const onFilterChange = async (changedFields: FieldData[]) => {
         const changedFilterFields = changedFields.map((item) => ({
             [item.name[0]]: item.value
@@ -86,7 +107,7 @@ const Tenants = () => {
             setQueryParams((prev) => ({
                 ...prev,
                 ...changedFilterFields,
-                currentPage:1
+                currentPage: 1
             }));
         }
 
@@ -117,7 +138,22 @@ const Tenants = () => {
                     </TenantsFilter>
                 </Form>
                 <Table
-                    columns={columns}
+                    columns={[
+                        ...columns,
+                        {
+                            title: 'Action',
+                            render: (_: string, record: Tenant) => {
+                                return (
+                                    <Space>
+                                        <Button type="link" onClick={() => {
+                                            setCurrentEditingTenant(record);
+                                        }}>Edit</Button>
+                                        <Button type="link">Delete</Button>
+                                    </Space>
+                                )
+                            }
+                        }
+                    ]}
                     dataSource={tenants?.data}
                     rowKey={'id'}
                     pagination={{
@@ -132,13 +168,13 @@ const Tenants = () => {
                                 }
                             })
                         },
-                        showTotal: (total:number,range:number[]) => {
+                        showTotal: (total: number, range: number[]) => {
                             return `Showing ${range[0]}-${range[1]} of ${total} items`;
                         }
                     }}
                 />
                 <Drawer
-                    title="Add Tenant"
+                    title={currentEditingTenant ? "Update Tenant" : "Add Tenant"}
                     width={720}
                     styles={{ body: { background: colorBgLayout } }}
                     closable={{ 'aria-label': 'Close Button' }}
@@ -146,15 +182,17 @@ const Tenants = () => {
                     destroyOnHidden={true}
                     onClose={() => {
                         form.resetFields();
+                        setCurrentEditingTenant(null);
                         setDrawerOpen(false);
                     }}
                     extra={
                         <Space>
                             <Button onClick={() => {
                                 form.resetFields();
+                                setCurrentEditingTenant(null);
                                 setDrawerOpen(false);
                             }}>Cancel</Button>
-                            <Button type="primary" onClick={onHandleSubmit}>Submit</Button>
+                            <Button type="primary" onClick={onHandleSubmit}>{currentEditingTenant ? "Update" : "Submit"}</Button>
                         </Space>
                     }
                 >

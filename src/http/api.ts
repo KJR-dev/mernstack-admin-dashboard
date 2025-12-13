@@ -1,4 +1,4 @@
-import type { CreateTenant, CreateUserData, Credentials } from "../types";
+import type { CreateTenant, CreateUserData, Credentials, UpdateTenant } from "../types";
 import { api } from "./client";
 
 // Auth service
@@ -14,4 +14,5 @@ export const deleteUser = (id: number) => api.delete(`api/v1/web/user/${id}`);
 
 // Tenant Service
 export const getTenants = (queryString: string) => api.get(`api/v1/web/tenants/?${queryString}`);
-export const createTenant = (tenant: CreateTenant) => api.post('api/v1/web/tenants',tenant);
+export const createTenant = (tenant: CreateTenant) => api.post('api/v1/web/tenants', tenant);
+export const updateTenant = (tenant: CreateTenant, id: string) => api.put(`api/v1/web/tenants/${id}`, tenant);
