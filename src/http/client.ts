@@ -15,7 +15,7 @@ export const api = axios.create({
 // const refreshToken = () => api.post('/api/v1/web/auth/refresh');
 
 const refreshToken = async () => {
-    await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}${AUTH_SERVICE}/auth/refresh`, {}, {
+    await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}${AUTH_SERVICE}/api/v1/web/auth/refresh`, {}, {
         withCredentials: true,
     })
 }
