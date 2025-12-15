@@ -2,7 +2,7 @@ import type { CreateTenant, CreateUserData, Credentials } from "../types";
 import { api } from "./client";
 
 export const AUTH_SERVICE = '/api/v1/web/auth';
-// const CATALOG_SERVICE = '/api/v1/catalog';
+const CATALOG_SERVICE = '/api/v1/catalog';
 
 // Auth service
 export const login = (credentials: Credentials) => api.post(`${AUTH_SERVICE}/api/v1/web/auth/login`, credentials);
@@ -22,4 +22,8 @@ export const updateTenant = (tenant: CreateTenant, id: string) => api.put(`${AUT
 export const deleteTenant = (id: string) => api.delete(`${AUTH_SERVICE}/api/v1/web/auth/tenants/${id}`);
 
 // Catalog service
+//Catalog service (Categories)
+export const getCategories = () => api.get(`${CATALOG_SERVICE}/api/v1/catalog/categories`);
+
 //Catalog service (Product)
+export const getProducts = (queryString: string) => api.get(`${CATALOG_SERVICE}/api/v1/catalog/products/?${queryString}`);

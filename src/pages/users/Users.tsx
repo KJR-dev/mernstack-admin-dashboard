@@ -130,7 +130,6 @@ const Users = () => {
   }, []);
 
   const onFilterChange = (changedFields: FieldData[]) => {
-    console.log(changedFields);
     const changedFilterFields = changedFields
       .map((item) => ({ [item.name[0]]: item.value }))
       .reduce((acc, item) => ({ ...acc, ...item }), {});
