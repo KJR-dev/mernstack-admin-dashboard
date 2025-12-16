@@ -54,8 +54,8 @@ const ProductForm = () => {
                                 >
                                     {categories?.map((category: Category) => (
                                         <Select.Option value={JSON.stringify(category)} key={category._id}>
-                                        {`${category.name}`}
-                                    </Select.Option>
+                                            {`${category.name}`}
+                                        </Select.Option>
                                     ))}
                                 </Select>
                             </Form.Item>
@@ -93,8 +93,8 @@ const ProductForm = () => {
                     </Row>
                 </Card>
 
-                {selectedCategory && <Pricing selectedCategory={selectedCategory}/>}
-                {selectedCategory && <Attributes />}
+                {selectedCategory && <Pricing selectedCategory={selectedCategory} />}
+                {selectedCategory && <Attributes selectedCategory={selectedCategory} />}
 
                 <Card title="Tenant info">
                     <Row gutter={24}>
