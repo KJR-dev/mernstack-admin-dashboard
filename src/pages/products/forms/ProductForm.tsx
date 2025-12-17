@@ -1,4 +1,4 @@
-import { Row, Col, Space, Card, Input, Select, Form, Typography, Switch} from "antd"
+import { Row, Col, Space, Card, Input, Select, Form, Typography, Switch } from "antd"
 
 import type { Category, Tenant } from "../../../types";
 import { useQuery } from "@tanstack/react-query";
@@ -6,9 +6,11 @@ import { getCategories, getTenants } from "../../../http/api";
 import Pricing from "./Pricing";
 import Attributes from "./Attributes";
 import ProductImage from "./ProductImage";
+import { useAuthStore } from "../../../store";
 
 const ProductForm = () => {
     const selectedCategory = Form.useWatch('categoryId');
+    const { user } = useAuthStore();
 
     const { data: categories } = useQuery({
         queryKey: ["categories"],
@@ -85,32 +87,36 @@ const ProductForm = () => {
                 {selectedCategory && <Pricing selectedCategory={selectedCategory} />}
                 {selectedCategory && <Attributes selectedCategory={selectedCategory} />}
 
-                <Card title="Tenant info">
-                    <Row gutter={24}>
-                        <Col span={24}>
-                            <Form.Item label="Tenant" name="tenantId" rules={[
-                                {
-                                    required: true,
-                                    message: "Tenant is required"
-                                }
-                            ]}>
-                                <Select style={{ width: '100%' }}
-                                    id="selectBoxInUserForm"
-                                    size="large"
-                                    allowClear={true}
-                                    onChange={() => { }}
-                                    placeholder="Select Tenant"
-                                >
-                                    {tenants?.data.map((tenant: Tenant) =>
-                                    (<Select.Option key={tenant.id} value={tenant.id}>
-                                        {`${tenant.name}, ${tenant.address}`}
-                                    </Select.Option>)
-                                    )}
-                                </Select>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                </Card>
+                {
+                    user?.role !== "manager" && (
+                        <Card title="Tenant info">
+                            <Row gutter={24}>
+                                <Col span={24}>
+                                    <Form.Item label="Tenant" name="tenantId" rules={[
+                                        {
+                                            required: true,
+                                            message: "Tenant is required"
+                                        }
+                                    ]}>
+                                        <Select style={{ width: '100%' }}
+                                            id="selectBoxInUserForm"
+                                            size="large"
+                                            allowClear={true}
+                                            onChange={() => { }}
+                                            placeholder="Select Tenant"
+                                        >
+                                            {tenants?.data.map((tenant: Tenant) =>
+                                            (<Select.Option key={tenant.id} value={tenant.id}>
+                                                {`${tenant.name}, ${tenant.address}`}
+                                            </Select.Option>)
+                                            )}
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        </Card>
+                    )
+                }
 
                 <Card title="Other properties">
                     <Row gutter={24}>
