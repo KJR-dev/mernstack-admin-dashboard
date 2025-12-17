@@ -4,14 +4,15 @@ import { LoadingOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons'
 import ProductsFilter from "./ProductsFilter";
 import { useMemo, useState } from "react";
 import { PER_PAGE } from "../../constants";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { getProducts } from "../../http/api";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createProduct, getProducts } from "../../http/api";
 import type { FieldData, Product } from "../../types";
 import { format } from "date-fns";
 import { debounce } from "lodash";
 import { useAuthStore } from "../../store";
 import ProductForm from "./forms/ProductForm";
 import { useForm } from "antd/es/form/Form";
+import { makeFormData } from "./forms/helper";
 
 const columns = [
     {
@@ -68,6 +69,7 @@ const Products = () => {
     const { user } = useAuthStore();
     const { token: { colorBgLayout } } = theme.useToken();
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const queryClient = useQueryClient();
 
     const [queryParams, setQueryParams] = useState({
         page: 1,
@@ -110,8 +112,51 @@ const Products = () => {
         }
     }
 
-    const onHandleSubmit = () => {
-        console.log("✅✅✅✅✅");
+    const { mutate: productMutate } = useMutation({
+        mutationKey: ['product'],
+        mutationFn: async (data: FormData) => createProduct(data).then((res) => res.data),
+        onSuccess: async () => {
+            queryClient.invalidateQueries({ queryKey: (['products']) });
+            form.resetFields();
+            setDrawerOpen(false);
+            return;
+        }
+    })
+
+    const onHandleSubmit = async () => {
+        await form.validateFields();
+
+        const priceConfiguration = Object.entries(form.getFieldValue('priceConfiguration')).reduce((acc, [key, value]) => {
+            const parsedKey = JSON.parse(key);
+            return {
+                ...acc,
+                [parsedKey.configurationKey]: {
+                    priceType: parsedKey.priceType,
+                    availableOptions: value,
+                }
+            }
+        }, {})
+
+        const categoryId = JSON.parse(form.getFieldValue("categoryId"))._id;
+
+        const attributes = Object.entries(form.getFieldValue('attributes')).map(([key, value]) => {
+            return {
+                name: key,
+                value: value
+            }
+        });
+
+        const postData = {
+            ...form.getFieldsValue(),
+            image:form.getFieldValue("image"),
+            attributes,
+            categoryId,
+            priceConfiguration,
+        }
+
+        const formData = makeFormData(postData);
+
+        await productMutate(formData);
     }
 
     return <>
@@ -135,7 +180,7 @@ const Products = () => {
             </Flex>
             <Form form={filterForm} onFieldsChange={onFilterChange}>
                 <ProductsFilter>
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => { 
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => {
                         setDrawerOpen(true)
                     }}>Add Product</Button>
                 </ProductsFilter>
@@ -196,7 +241,7 @@ const Products = () => {
                     </Space>
                 }
             >
-                <Form layout="vertical">
+                <Form layout="vertical" form={form}>
                     <ProductForm />
                 </Form>
             </Drawer>

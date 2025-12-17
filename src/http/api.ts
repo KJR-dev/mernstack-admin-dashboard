@@ -27,3 +27,8 @@ export const getCategories = () => api.get(`${CATALOG_SERVICE}/api/v1/catalog/ca
 
 //Catalog service (Product)
 export const getProducts = (queryString: string) => api.get(`${CATALOG_SERVICE}/api/v1/catalog/products/?${queryString}`);
+export const createProduct = (product: FormData) => api.post(`${CATALOG_SERVICE}/api/v1/catalog/products`, product, {
+    headers: {
+        "Content-Type": "multipart/form-data",
+    },
+});

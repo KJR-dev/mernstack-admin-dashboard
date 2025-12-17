@@ -59,11 +59,14 @@ export interface Category {
 }
 
 export type Product = {
-    _id?:string,
+    _id?: string,
     name: string,
     description: string,
-    image:string,
+    image: string,
     category: Category,
     isPublish: boolean,
-    createdAt:string
+    createdAt: string
 }
+
+export type ImageField = { file: File }
+export type CreateProductData = Product & { image: ImageField };
