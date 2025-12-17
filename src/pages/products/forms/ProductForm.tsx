@@ -1,4 +1,4 @@
-import { Row, Col, Space, Card, Input, Select, Form, Typography, Switch } from "antd"
+import { Row, Col, Space, Card, Input, Select, Form, Typography, Switch, type FormInstance } from "antd"
 
 import type { Category, Tenant } from "../../../types";
 import { useQuery } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import Attributes from "./Attributes";
 import ProductImage from "./ProductImage";
 import { useAuthStore } from "../../../store";
 
-const ProductForm = () => {
+const ProductForm = ({form}:{form:FormInstance}) => {
     const selectedCategory = Form.useWatch('categoryId');
     const { user } = useAuthStore();
 
@@ -56,7 +56,7 @@ const ProductForm = () => {
                                     placeholder="Select category"
                                 >
                                     {categories?.map((category: Category) => (
-                                        <Select.Option value={JSON.stringify(category)} key={category._id}>
+                                        <Select.Option value={category._id} key={category._id}>
                                             {`${category.name}`}
                                         </Select.Option>
                                     ))}
@@ -79,7 +79,7 @@ const ProductForm = () => {
                 <Card title="Product image">
                     <Row gutter={20}>
                         <Col span={12}>
-                            <ProductImage />
+                            <ProductImage initialImage={form.getFieldValue('image')} />
                         </Col>
                     </Row>
                 </Card>
@@ -106,7 +106,7 @@ const ProductForm = () => {
                                             placeholder="Select Tenant"
                                         >
                                             {tenants?.data.map((tenant: Tenant) =>
-                                            (<Select.Option key={tenant.id} value={tenant.id}>
+                                            (<Select.Option key={tenant.id} value={String(tenant.id)}>
                                                 {`${tenant.name}, ${tenant.address}`}
                                             </Select.Option>)
                                             )}

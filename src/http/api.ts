@@ -24,10 +24,16 @@ export const deleteTenant = (id: string) => api.delete(`${AUTH_SERVICE}/api/v1/w
 // Catalog service
 //Catalog service (Categories)
 export const getCategories = () => api.get(`${CATALOG_SERVICE}/api/v1/catalog/categories`);
+export const getCategory = (id: string) => api.get(`${CATALOG_SERVICE}/api/v1/catalog/categories/${id}`);
 
 //Catalog service (Product)
 export const getProducts = (queryString: string) => api.get(`${CATALOG_SERVICE}/api/v1/catalog/products/?${queryString}`);
 export const createProduct = (product: FormData) => api.post(`${CATALOG_SERVICE}/api/v1/catalog/products`, product, {
+    headers: {
+        "Content-Type": "multipart/form-data",
+    },
+});
+export const updateProduct = (product: FormData, productId: string) => api.put(`${CATALOG_SERVICE}/api/v1/catalog/products/${productId}`, product, {
     headers: {
         "Content-Type": "multipart/form-data",
     },
