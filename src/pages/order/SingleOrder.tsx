@@ -15,7 +15,7 @@ const SingleOrder = () => {
                 title: <Link to="/">Dashboard</Link>,
               },
               {
-                title: <Link to="/">Orders</Link>,
+                title: <Link to="/orders">Orders</Link>,
               },
               {
                 title: 'Order #23561367813689',
