@@ -5,6 +5,7 @@ import {
   Breadcrumb,
   Card,
   Col,
+  Descriptions,
   Flex,
   List,
   Row,
@@ -19,138 +20,122 @@ import { getSingleOrder } from '../../http/api';
 import type { Order } from '../../types';
 import { capitalizeFirst } from '../products/forms/helper';
 
+const { Text } = Typography;
+
 const SingleOrder = () => {
-  const params = useParams();
-  const orderId = params.orderId;
+  const { orderId } = useParams();
+
   const { data: order } = useQuery<Order>({
     queryKey: ['order', orderId],
     queryFn: () => {
       const queryString = new URLSearchParams({
         fields:
-          'cart,address,paymentMode,tenantId,total,comment,paymentStatus,orderStatus,createdAt',
+          'cart,address,paymentMode,tenantId,total,comment,paymentStatus,orderStatus,createdAt,customerId',
       }).toString();
       return getSingleOrder(orderId as string, queryString).then(
         (res) => res.data,
       );
     },
+    enabled: !!orderId,
   });
 
-  if (!order) {
-    return;
-  }
+  if (!order) return null;
 
   return (
-    <>
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        {/* Header */}
-        <Flex justify="space-between" align="center">
-          <Breadcrumb
-            separator={<RightOutlined />}
-            items={[
-              {
-                title: <Link to="/">Dashboard</Link>,
-              },
-              {
-                title: <Link to="/orders">Orders</Link>,
-              },
-              {
-                title: `Order #${order?._id}`,
-              },
-            ]}
-          />
-        </Flex>
-        <Row gutter={24}>
-          <Col span={14}>
-            <Card
-              title="Order Details"
-              extra={
-                <Tag
-                  bordered={false}
-                  color={colorMapping[order?.orderStatus] ?? 'processing'}
-                >
-                  {capitalizeFirst(order?.orderStatus)}
-                </Tag>
-              }
-            >
-              <List
-                itemLayout="horizontal"
-                dataSource={order.cart}
-                renderItem={(item) => (
-                  <List.Item>
-                    <List.Item.Meta
-                      avatar={<Avatar src={item.image} />}
-                      title={item.name}
-                      description={item.chosenConfiguration.selectedToppings
-                        ?.flat()
-                        .map((topping) => topping.name)
-                        .join(', ')}
-                    />
-                    <Space size="large">
-                      <Typography.Text>
-                        {Object.values(
-                          item.chosenConfiguration.priceConfiguration,
-                        ).join(', ')}
-                      </Typography.Text>
-                      <Typography.Text>
-                        {item.qty} Items{item.qty > 1 ? 's' : ''}
-                      </Typography.Text>
-                    </Space>
-                  </List.Item>
-                )}
-              />
+    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+      {/* Header */}
+      <Flex justify="space-between" align="center">
+        <Breadcrumb
+          separator={<RightOutlined />}
+          items={[
+            { title: <Link to="/">Dashboard</Link> },
+            { title: <Link to="/orders">Orders</Link> },
+            { title: `Order #${order._id}` },
+          ]}
+        />
+        <Tag
+          bordered={false}
+          color={colorMapping[order.orderStatus] ?? 'processing'}
+        >
+          {capitalizeFirst(order.orderStatus)}
+        </Tag>
+      </Flex>
+
+      <Row gutter={24}>
+        {/* Order Items */}
+        <Col span={14}>
+          <Card title="Order Items" bordered={false}>
+            <List
+              itemLayout="horizontal"
+              dataSource={order.cart}
+              renderItem={(item) => (
+                <List.Item>
+                  <List.Item.Meta
+                    avatar={
+                      <Avatar shape="square" size={56} src={item.image} />
+                    }
+                    title={<Text strong>{item.name}</Text>}
+                    description={item.chosenConfiguration.selectedToppings
+                      ?.flat()
+                      .map((t) => t.name)
+                      .join(', ')}
+                  />
+                  <Space direction="vertical" align="end">
+                    <Text strong>
+                      {Object.values(
+                        item.chosenConfiguration.priceConfiguration,
+                      ).join(', ')}
+                    </Text>
+                    <Text type="secondary">Qty: {item.qty}</Text>
+                  </Space>
+                </List.Item>
+              )}
+            />
+          </Card>
+        </Col>
+
+        {/* Customer & Order Info */}
+        <Col span={10}>
+          <Space direction="vertical" size="large" style={{ width: '100%' }}>
+            {/* Customer Details */}
+            <Card title="Customer Details" bordered={false}>
+              <Descriptions column={1} size="small">
+                <Descriptions.Item label="Name">
+                  {order.customerId.firstName} {order.customerId.lastName}
+                </Descriptions.Item>
+                <Descriptions.Item label="Address">
+                  {order.address}
+                </Descriptions.Item>
+              </Descriptions>
             </Card>
-          </Col>
-          <Col span={10}>
-            <Card title="Customer Details">
-              <Space direction="vertical">
-                <Flex style={{ flexDirection: 'column' }}>
-                  <Typography.Text type="secondary">Name</Typography.Text>
-                  <Typography.Text type="secondary">
-                    {order.customerId.firstName +
-                      ' ' +
-                      order.customerId.lastName}
-                  </Typography.Text>
-                </Flex>
-                <Flex style={{ flexDirection: 'column' }}>
-                  <Typography.Text type="secondary">Address</Typography.Text>
-                  <Typography.Text type="secondary">
-                    {order.address}
-                  </Typography.Text>
-                </Flex>
-                <Flex style={{ flexDirection: 'column' }}>
-                  <Typography.Text type="secondary">
-                    Payment Status
-                  </Typography.Text>
-                  <Typography.Text type="secondary">
+
+            {/* Order Summary */}
+            <Card title="Order Summary" bordered={false}>
+              <Descriptions column={1} size="small">
+                <Descriptions.Item label="Payment Status">
+                  <Tag
+                    color={order.paymentStatus === 'paid' ? 'green' : 'orange'}
+                  >
                     {capitalizeFirst(order.paymentStatus)}
-                  </Typography.Text>
-                </Flex>
-                <Flex style={{ flexDirection: 'column' }}>
-                  <Typography.Text type="secondary">
-                    Order Amount
-                  </Typography.Text>
-                  <Typography.Text type="secondary">
-                    ₹ {order.total}
-                  </Typography.Text>
-                </Flex>
-                <Flex style={{ flexDirection: 'column' }}>
-                  <Typography.Text type="secondary">Order Time</Typography.Text>
-                  <Typography.Text type="secondary">
-                    {format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm')}
-                  </Typography.Text>
-                </Flex>
-                <Flex style={{ flexDirection: 'column' }}>
-                  <Typography.Text type="secondary">Comment</Typography.Text>
-                  <Typography.Text type="secondary">
+                  </Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label="Order Amount">
+                  <Text strong>₹ {order.total}</Text>
+                </Descriptions.Item>
+                <Descriptions.Item label="Order Time">
+                  {format(new Date(order.createdAt), 'dd MMM yyyy, HH:mm')}
+                </Descriptions.Item>
+                {order.comment && (
+                  <Descriptions.Item label="Comment">
                     {order.comment}
-                  </Typography.Text>
-                </Flex>
-              </Space>
+                  </Descriptions.Item>
+                )}
+              </Descriptions>
             </Card>
-          </Col>
-        </Row>
-      </Space>
-    </>
+          </Space>
+        </Col>
+      </Row>
+    </Space>
   );
 };
 
