@@ -1,40 +1,59 @@
-import type { CreateTenant, CreateUserData, Credentials } from "../types";
-import { api } from "./client";
+import type { CreateTenant, CreateUserData, Credentials } from '../types';
+import { api } from './client';
 
 export const AUTH_SERVICE = '/api/v1/web/auth';
 const CATALOG_SERVICE = '/api/v1/catalog';
+const ORDER_SERVICE = '/api/v1/order';
 
 // Auth service
-export const login = (credentials: Credentials) => api.post(`${AUTH_SERVICE}/api/v1/web/auth/login`, credentials);
+export const login = (credentials: Credentials) =>
+  api.post(`${AUTH_SERVICE}/api/v1/web/auth/login`, credentials);
 export const self = () => api.get(`${AUTH_SERVICE}/api/v1/web/auth/self`);
 export const logout = () => api.post(`${AUTH_SERVICE}/api/v1/web/auth/logout`);
 
 // Auth service (User)
-export const getUsers = (queryString: string) => api.get(`${AUTH_SERVICE}/api/v1/web/auth/user?${queryString}`);
-export const createUser = (user: CreateUserData) => api.post(`${AUTH_SERVICE}/api/v1/web/auth/user`, user);
-export const updateUser = (user: CreateUserData, id: number) => api.patch(`${AUTH_SERVICE}/api/v1/web/auth/user/${id}`, user);
-export const deleteUser = (id: number) => api.delete(`${AUTH_SERVICE}/api/v1/web/auth/user/${id}`);
+export const getUsers = (queryString: string) =>
+  api.get(`${AUTH_SERVICE}/api/v1/web/auth/user?${queryString}`);
+export const createUser = (user: CreateUserData) =>
+  api.post(`${AUTH_SERVICE}/api/v1/web/auth/user`, user);
+export const updateUser = (user: CreateUserData, id: number) =>
+  api.patch(`${AUTH_SERVICE}/api/v1/web/auth/user/${id}`, user);
+export const deleteUser = (id: number) =>
+  api.delete(`${AUTH_SERVICE}/api/v1/web/auth/user/${id}`);
 
 // Auth service (Tenant)
-export const getTenants = (queryString: string) => api.get(`${AUTH_SERVICE}/api/v1/web/auth/tenants/?${queryString}`);
-export const createTenant = (tenant: CreateTenant) => api.post(`${AUTH_SERVICE}/api/v1/web/auth/tenants`, tenant);
-export const updateTenant = (tenant: CreateTenant, id: string) => api.put(`${AUTH_SERVICE}/api/v1/web/auth/tenants/${id}`, tenant);
-export const deleteTenant = (id: string) => api.delete(`${AUTH_SERVICE}/api/v1/web/auth/tenants/${id}`);
+export const getTenants = (queryString: string) =>
+  api.get(`${AUTH_SERVICE}/api/v1/web/auth/tenants/?${queryString}`);
+export const createTenant = (tenant: CreateTenant) =>
+  api.post(`${AUTH_SERVICE}/api/v1/web/auth/tenants`, tenant);
+export const updateTenant = (tenant: CreateTenant, id: string) =>
+  api.put(`${AUTH_SERVICE}/api/v1/web/auth/tenants/${id}`, tenant);
+export const deleteTenant = (id: string) =>
+  api.delete(`${AUTH_SERVICE}/api/v1/web/auth/tenants/${id}`);
 
 // Catalog service
 //Catalog service (Categories)
-export const getCategories = () => api.get(`${CATALOG_SERVICE}/api/v1/catalog/categories`);
-export const getCategory = (id: string) => api.get(`${CATALOG_SERVICE}/api/v1/catalog/categories/${id}`);
+export const getCategories = () =>
+  api.get(`${CATALOG_SERVICE}/api/v1/catalog/categories`);
+export const getCategory = (id: string) =>
+  api.get(`${CATALOG_SERVICE}/api/v1/catalog/categories/${id}`);
 
 //Catalog service (Product)
-export const getProducts = (queryString: string) => api.get(`${CATALOG_SERVICE}/api/v1/catalog/products/?${queryString}`);
-export const createProduct = (product: FormData) => api.post(`${CATALOG_SERVICE}/api/v1/catalog/products`, product, {
+export const getProducts = (queryString: string) =>
+  api.get(`${CATALOG_SERVICE}/api/v1/catalog/products/?${queryString}`);
+export const createProduct = (product: FormData) =>
+  api.post(`${CATALOG_SERVICE}/api/v1/catalog/products`, product, {
     headers: {
-        "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
-});
-export const updateProduct = (product: FormData, productId: string) => api.put(`${CATALOG_SERVICE}/api/v1/catalog/products/${productId}`, product, {
+  });
+export const updateProduct = (product: FormData, productId: string) =>
+  api.put(`${CATALOG_SERVICE}/api/v1/catalog/products/${productId}`, product, {
     headers: {
-        "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
-});
+  });
+
+// Order service
+export const getOrders = (queryString: string) =>
+  api.get(`${ORDER_SERVICE}/api/v1/order/orders?${queryString}`);

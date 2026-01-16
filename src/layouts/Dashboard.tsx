@@ -3,7 +3,7 @@ import { useAuthStore } from "../store"
 import { Avatar, Badge, Dropdown, Flex, Layout, Menu, Space, theme } from "antd";
 import { Header, Content, Footer } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
-import Icon, { BellFilled } from "@ant-design/icons";
+import Icon, { BellFilled, OrderedListOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import Home from "../components/icon/Home";
 import UserIcon from "../components/icon/UserIcon";
@@ -16,21 +16,27 @@ import { logout } from "../http/api";
 
 const getMenuItems = (role: string) => {
     const baseItems = [
-        {
-            key: '/',
-            icon: <Icon component={Home} />,
-            label: <NavLink to='/'>Home</NavLink>
+      {
+        key: '/',
+        icon: <Icon component={Home} />,
+        label: <NavLink to="/">Home</NavLink>,
+      },
+      {
+        key: '/products',
+        icon: <Icon component={BasketIcon} />,
+        label: <NavLink to="/products">Products</NavLink>,
         },
-        {
-            key: '/products',
-            icon: <Icon component={BasketIcon} />,
-            label: <NavLink to='/products'>Products</NavLink>
-        },
-        {
-            key: '/promos',
-            icon: <Icon component={GiftIcon} />,
-            label: <NavLink to='/promos'>Promos</NavLink>
-        },
+       {
+        key: '/orders',
+        icon: <Icon component={OrderedListOutlined} />,
+        label: <NavLink to="/orders">Orders</NavLink>,
+      },
+      {
+        key: '/promos',
+        icon: <Icon component={GiftIcon} />,
+        label: <NavLink to="/promos">Promos</NavLink>,
+      },
+     
     ];
     if (role === "admin") {
         const menus = [...baseItems];
