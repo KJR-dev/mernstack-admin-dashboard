@@ -137,7 +137,6 @@ const SingleOrder = () => {
                   />
                   <Space direction="vertical" align="end">
                     <Typography.Text strong>
-                      ₹
                       {Object.values(
                         item.chosenConfiguration.priceConfiguration,
                       ).join(', ')}
