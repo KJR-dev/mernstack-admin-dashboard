@@ -1,4 +1,9 @@
-import type { CreateTenant, CreateUserData, Credentials } from '../types';
+import type {
+  CreateTenant,
+  CreateUserData,
+  Credentials,
+  OrderStatus,
+} from '../types';
 import { api } from './client';
 
 export const AUTH_SERVICE = '/api/v1/web/auth';
@@ -60,3 +65,12 @@ export const getOrders = (queryString: string) =>
 
 export const getSingleOrder = (orderId: string, queryString: string) =>
   api.get(`${ORDER_SERVICE}/api/v1/order/orders/${orderId}?${queryString}`);
+
+export const changeOrderStatus = (
+  orderId: string,
+  data: { status: OrderStatus },
+) =>
+  api.patch(
+    `${ORDER_SERVICE}/api/v1/order/orders/change-status/${orderId}`,
+    data,
+  );
