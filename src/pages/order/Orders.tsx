@@ -2,11 +2,14 @@ import { RightOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { Breadcrumb, Flex, Space, Table, Tag, Typography } from 'antd';
 import { format } from 'date-fns';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { colorMapping } from '../../constants';
 import { getOrders } from '../../http/api';
+import socket from '../../libs/socket';
+import { useAuthStore } from '../../store';
 import type { Order } from '../../types';
 import { capitalizeFirst } from '../products/forms/helper';
-import { colorMapping } from '../../constants';
 
 const columns = [
   {
@@ -62,7 +65,11 @@ const columns = [
     dataIndex: 'orderStatus',
     key: 'orderStatus',
     render: (_text: string, record: Order) => {
-      return <Tag bordered={false} color={colorMapping[record.orderStatus]}>{capitalizeFirst(record.orderStatus)}</Tag>;
+      return (
+        <Tag bordered={false} color={colorMapping[record.orderStatus]}>
+          {capitalizeFirst(record.orderStatus)}
+        </Tag>
+      );
     },
   },
   {
@@ -94,6 +101,26 @@ const columns = [
 ];
 const TENANT_ID = 3;
 const Orders = () => {
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (user?.tenant) {
+      socket.on('order-update', (data) => {
+        console.log('data received: ', data);
+      });
+      socket.on('join', (data) => {
+        console.log('User joined in:', data.roomId);
+      });
+      socket.emit('join', {
+        tenantId: user?.tenant.id,
+      });
+      return () => {
+        socket.off('join');
+        socket.off('order-update');
+      };
+    }
+  }, [user?.tenant]);
+
   const { data: orders } = useQuery({
     queryKey: ['orders'],
     queryFn: () => {
