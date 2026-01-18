@@ -1,6 +1,6 @@
 import { RightOutlined } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
-import { Breadcrumb, Flex, Space, Table, Tag, Typography } from 'antd';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Breadcrumb, Flex, message, Space, Table, Tag, Typography } from 'antd';
 import { format } from 'date-fns';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
@@ -8,7 +8,12 @@ import { colorMapping } from '../../constants';
 import { getOrders } from '../../http/api';
 import socket from '../../libs/socket';
 import { useAuthStore } from '../../store';
-import type { Order } from '../../types';
+import {
+  OrderEvents,
+  PaymentMode,
+  PaymentStatus,
+  type Order,
+} from '../../types';
 import { capitalizeFirst } from '../products/forms/helper';
 
 const columns = [
@@ -102,10 +107,30 @@ const columns = [
 const TENANT_ID = 3;
 const Orders = () => {
   const { user } = useAuthStore();
+  const queryClient = useQueryClient();
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     if (user?.tenant) {
       socket.on('order-update', (data) => {
+        // todo: data.event_type =
+        if (
+          (data.event_types === OrderEvents.ORDER_CREATE &&
+            data.data.paymentMode === PaymentMode.CASH) ||
+          (data.event_types === OrderEvents.PAYMENT_STATUS_UPDATE &&
+            data.data.paymentStatus === PaymentStatus.PAID &&
+            PaymentMode.CARD)
+        ) {
+          queryClient.setQueryData(['orders'], (old: Order[]) => [
+            data.data,
+            ...old,
+          ]);
+          messageApi.open({
+            type: 'success',
+            content: 'New Order Received.',
+          });
+        }
+
         console.log('data received: ', data);
       });
       socket.on('join', (data) => {
@@ -133,6 +158,7 @@ const Orders = () => {
   });
   return (
     <>
+      {contextHolder}
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         {/* Header */}
         <Flex justify="space-between" align="center">

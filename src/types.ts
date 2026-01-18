@@ -103,8 +103,10 @@ export type Topping = {
   image: string;
 };
 
-export interface CartItem
-  extends Pick<Product, '_id' | 'name' | 'image' | 'priceConfiguration'> {
+export interface CartItem extends Pick<
+  Product,
+  '_id' | 'name' | 'image' | 'priceConfiguration'
+> {
   chosenConfiguration: {
     priceConfiguration: {
       [key: string]: string;
@@ -138,4 +140,10 @@ export interface Order {
   paymentStatus: PaymentStatus;
   paymentId?: string;
   createdAt: string;
+}
+
+export enum OrderEvents {
+  ORDER_CREATE = 'ORDER_CREATE',
+  PAYMENT_STATUS_UPDATE = 'PAYMENT_STATUS_UPDATE',
+  ORDER_STATUS_UPDATE = 'ORDER_STATUS_UPDATE',
 }
