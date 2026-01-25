@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/login/login';
 import Orders from './pages/order/Orders';
 import SingleOrder from './pages/order/SingleOrder';
-import Products from './pages/products';
+import Products from './pages/products/Products.tsx';
 import Tenants from './pages/tenants/Tenants';
 import Users from './pages/users/Users';
 
