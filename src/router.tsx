@@ -5,7 +5,7 @@ import Root from './layouts/Root';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/login/login';
 import Orders from './pages/order/Orders';
-import SingleOrder from './pages/order/singleOrder';
+import SingleOrder from './pages/order/SingleOrder';
 import Products from './pages/products/Products';
 import Tenants from './pages/tenants/Tenants';
 import Users from './pages/users/Users';
