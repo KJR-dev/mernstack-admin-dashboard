@@ -131,7 +131,6 @@ const SingleOrder = () => {
                       <Typography.Text strong>{item.name}</Typography.Text>
                     }
                     description={item.chosenConfiguration.selectedToppings
-                      ?.flat()
                       .map((t) => t.name)
                       .join(', ')}
                   />
